@@ -178,4 +178,5 @@ function copyText(str){navigator.clipboard.writeText(str).then(function(){toast(
 function saveOAuth(e){e.preventDefault();var f=new FormData(e.target);fetch("/admin/api/settings",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key:"yandex_oauth_client_id",value:f.get("client_id")})}).then(function(){toast(tr("saved"))})}
 function getClientId(){fetch("/admin/api/settings").then(function(r){return r.json()}).then(function(s){if(s.yandex_oauth_client_id){document.querySelector("#oauthForm input[name=client_id]").value=s.yandex_oauth_client_id;toast(tr("loaded"));return}
 var cid=prompt(tr("get_client_id")+":");if(cid&&cid.length>5){document.querySelector("#oauthForm input[name=client_id]").value=cid;fetch("/admin/api/settings",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key:"yandex_oauth_client_id",value:cid})}).then(function(){toast(tr("saved"))})}}}
+</script>
 </body></html>
