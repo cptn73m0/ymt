@@ -18,6 +18,8 @@ import (
 	"time"
 
 	"golang.org/x/crypto/chacha20poly1305"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 // ─── User DB ───
