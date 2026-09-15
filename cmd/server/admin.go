@@ -443,7 +443,7 @@ func (s *Server) oauthCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Exchange code for token (simplified; real OAuth needs client_secret)
-	clientID := s.db.GetSetting("yandex_oauth_client_id")
+	_ = s.db.GetSetting("yandex_oauth_client_id")
 	// In production: POST to https://oauth.yandex.ru/token
 	s.db.SetSetting("yandex_oauth_token", "retrieved_token_"+code)
 	http.Redirect(w, r, "/admin?tab=settings&yandex=ok", http.StatusFound)
