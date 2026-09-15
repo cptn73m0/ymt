@@ -21,6 +21,8 @@ import (
 	"golang.org/x/net/http2"
 )
 
+var srv *Server
+
 type Server struct {
 	cfg        Config
 	adminToken string
@@ -28,10 +30,11 @@ type Server struct {
 	db         *UserDB
 	startedAt  time.Time
 
-	mu        sync.Mutex
-	connCount int
-	bytesUp   int64
-	bytesDown int64
+	mu          sync.Mutex
+	connCount   int
+	bytesUp     int64
+	bytesDown   int64
+	activeConns map[string]chan struct{}
 }
 
 type Config struct {
@@ -62,10 +65,11 @@ func main() {
 	}
 	log.Printf("crypto OK")
 
-	srv := &Server{
-		cfg:       cfg,
-		db:       openDB(filepath.Join(cfg.DataDir, "ymt.db")),
-		startedAt: time.Now(),
+	srv = &Server{
+		cfg:         cfg,
+		db:          openDB(filepath.Join(cfg.DataDir, "ymt.db")),
+		startedAt:   time.Now(),
+		activeConns: make(map[string]chan struct{}),
 	}
 
 	if srv.db.GetSetting("admin_token") == "" {
