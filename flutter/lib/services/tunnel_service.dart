@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import '../models/tunnel_config.dart';
 
-class TunnelService {
+class TunnelService extends ChangeNotifier {
   static const _channel = MethodChannel('ymt/tunnel');
 
   TunnelConfig? _config;

@@ -1,8 +1,9 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import '../models/app_info.dart';
 
-class AppListService {
+class AppListService extends ChangeNotifier {
   static const _channel = MethodChannel('ymt/apps');
 
   Future<List<AppInfo>> getInstalledApps() async {
