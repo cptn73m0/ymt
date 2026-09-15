@@ -9,20 +9,13 @@ import (
 	"io"
 	"log"
 	"net"
-	"net/http"
-	"os"
-	"os/signal"
-	"strconv"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 
 	"github.com/cptn73m0/ymt/internal/protocol"
 	"golang.org/x/net/http2"
 )
-
-var activeConns = make(map[string]net.Conn)
 
 func main() {
 	server := flag.String("server", "", "Server address (host:port)")
@@ -30,7 +23,6 @@ func main() {
 	keyHex := flag.String("key", "", "Master key in hex (32 bytes = 64 hex chars)")
 	mode := flag.String("mode", "socks5", "Proxy mode: socks5 or tun")
 	socksPort := flag.Int("socks-port", 1080, "SOCKS5 listen port")
-	allowedApps := flag.String("allowed-apps", "", "Comma-separated package names (Android only)")
 	flag.Parse()
 
 	if *server == "" || *keyHex == "" || *clientID == "" {
