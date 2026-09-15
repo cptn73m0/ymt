@@ -25,8 +25,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);background:var(--bg)}
 .topbar h1{font-size:18px;font-weight:700}
 .content{flex:1;overflow-y:auto;padding:20px 24px}
-.page{display:none}
-.page.active{display:block}
+.page{display:none}.page.active{display:block}
 .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
 .card{background:var(--bg2);border-radius:10px;padding:20px;border:1px solid var(--border)}
 .card h2{font-size:14px;color:var(--text2);margin-bottom:12px}
@@ -34,8 +33,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .lbl{font-size:12px;color:var(--text3);margin-top:4px}
 table{width:100%;border-collapse:collapse}
 th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);font-size:13px}
-th{color:var(--text3);font-weight:500}
-td{color:var(--text)}
+th{color:var(--text3);font-weight:500}td{color:var(--text)}
 .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
 .badge-on{background:#22c55e20;color:var(--success)}
 .badge-off{background:#6e6e7320;color:var(--text3)}
@@ -44,8 +42,6 @@ td{color:var(--text)}
 .btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{opacity:.9}
 .btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}.btn-ghost:hover{background:var(--bg3)}
 .btn-sm{padding:4px 10px;font-size:11px}
-form{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
-form label{font-size:12px;color:var(--text3);display:block;margin-bottom:4px}
 input{background:var(--bg3);border:1px solid var(--border);padding:8px 12px;border-radius:8px;color:var(--text);font-size:13px}
 input:focus{border-color:var(--accent);outline:none}
 .link-box{background:var(--bg3);padding:10px;border-radius:8px;font-family:monospace;font-size:12px;word-break:break-all;margin-top:8px;color:var(--text2)}
@@ -61,25 +57,23 @@ input:focus{border-color:var(--accent);outline:none}
 
 <div class="sidebar">
   <div class="logo">YMT Server</div>
-  <div class="nav-item active" id="nav-dashboard">📊 Dashboard</div>
-  <div class="nav-item" id="nav-users">👥 Users</div>
-  <div class="nav-item" id="nav-settings">⚙ Settings</div>
+  <div class="nav-item active" id="nav-dashboard">Dashboard</div>
+  <div class="nav-item" id="nav-users">Users</div>
+  <div class="nav-item" id="nav-settings">Settings</div>
   <div class="spacer"></div>
   <div class="sidebar-footer">
-    <div class="sidebar-btn" id="theme-btn">🌓 Theme</div>
-    <div class="sidebar-btn" id="lang-btn">🌐 RU</div>
-    <div class="sidebar-btn" id="logout-btn">🚪 Logout</div>
+    <div class="sidebar-btn" id="theme-btn">Theme</div>
+    <div class="sidebar-btn" id="lang-btn">RU</div>
+    <div class="sidebar-btn" id="logout-btn">Logout</div>
   </div>
 </div>
 
 <div class="main">
   <div class="topbar">
     <h1 id="page-title">Dashboard</h1>
-    <div><button class="btn btn-sm btn-ghost" id="refresh-btn">🔄</button></div>
+    <div><button class="btn btn-sm btn-ghost" id="refresh-btn">R</button></div>
   </div>
-
   <div class="content">
-
     <div id="page-dashboard" class="page active">
       <div class="row">
         <div class="card"><div class="big" id="s-online">0</div><div class="lbl">Online</div></div>
@@ -89,11 +83,10 @@ input:focus{border-color:var(--accent);outline:none}
       </div>
       <div class="card">
         <h2>Actions</h2>
-        <button class="btn btn-danger" id="restart-btn">🔄 Restart VPN</button>
+        <button class="btn btn-danger" id="restart-btn">Restart VPN</button>
         <div style="margin-top:12px;padding:12px;background:var(--bg3);border-radius:8px;font-size:12px;color:var(--text2)"><b>Server:</b> 2.27.123.198:9443</div>
       </div>
     </div>
-
     <div id="page-users" class="page">
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
@@ -114,11 +107,10 @@ input:focus{border-color:var(--accent);outline:none}
         </div>
       </div>
     </div>
-
     <div id="page-settings" class="page">
       <div class="card">
         <h2>Yandex OAuth</h2>
-        <p style="font-size:13px;color:var(--text3);margin-bottom:12px">Optional. Configure at oauth.yandex.ru, redirect: http://2.27.123.198:8080/admin/oauth/callback</p>
+        <p style="font-size:13px;color:var(--text3);margin-bottom:12px">Optional. Configure at oauth.yandex.ru</p>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
           <div style="flex:1"><label>Client ID</label><input id="oauth-client-id" style="width:100%"></div>
           <button class="btn btn-primary" id="save-oauth-btn" style="margin-top:18px">Save</button>
@@ -130,11 +122,9 @@ input:focus{border-color:var(--accent);outline:none}
         <div style="font-size:13px;color:var(--text2);line-height:1.8">
           <b>Domain:</b> 2.27.123.198<br>
           <b>Port:</b> 9443<br>
-          <b>Admin:</b> <a href="http://2.27.123.198:8080/admin" style="color:var(--accent)" target="_blank">http://2.27.123.198:8080/admin</a>
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -144,48 +134,24 @@ input:focus{border-color:var(--accent);outline:none}
   <div class="modal">
     <h3 id="modal-title">User Config</h3>
     <div id="modal-body"></div>
-    <button class="btn btn-ghost" id="modal-close-btn" style="margin-top:16px">Close</button>
+    <button class="btn btn-ghost" id="modal-close-btn">Close</button>
   </div>
 </div>
 
 <script>
-var lang = localStorage.getItem("ymt_lang") || "ru";
-var theme = localStorage.getItem("ymt_theme") || "dark";
+var lang = "ru";
+var theme = "dark";
 
-function toast(msg) {
-  var t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  setTimeout(function(){ t.classList.remove("show"); }, 3000);
-}
+function toast(msg) { var t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(function(){ t.classList.remove("show"); }, 3000); }
 
-function fmtBytes(b) {
-  if (!b) return "0 B";
-  var u = ["B","KB","MB","GB"];
-  var i = 0;
-  var v = b;
-  while (v >= 1024 && i < 3) { v = v / 1024; i++; }
-  return v.toFixed(1) + " " + u[i];
-}
+function fmtBytes(b) { if (!b) return "0 B"; var u = ["B","KB","MB","GB"]; var i = 0; var v = b; while (v >= 1024 && i < 3) { v = v / 1024; i++; } return v.toFixed(1) + " " + u[i]; }
 
-function fmtTime(t) {
-  if (!t) return "-";
-  var d = new Date(t);
-  if (isNaN(d.getTime())) return "-";
-  return d.toLocaleDateString() + " " + d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
-}
+function fmtTime(t) { if (!t) return "-"; var d = new Date(t); if (isNaN(d.getTime())) return "-"; return d.toLocaleDateString() + " " + d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}); }
 
-function esc(s) {
-  var d = document.createElement("div");
-  d.appendChild(document.createTextNode(s));
-  return d.innerHTML;
-}
-
-// --- API calls ---
+function esc(s) { var d = document.createElement("div"); d.appendChild(document.createTextNode(s)); return d.innerHTML; }
 
 function loadStats() {
-  var x = new XMLHttpRequest();
-  x.open("GET", "/admin/api/stats", true);
+  var x = new XMLHttpRequest(); x.open("GET", "/admin/api/stats", true);
   x.onload = function() {
     var d = JSON.parse(x.responseText);
     document.getElementById("s-online").textContent = d.connections;
@@ -198,257 +164,105 @@ function loadStats() {
 }
 
 function loadUsers() {
-  var x = new XMLHttpRequest();
-  x.open("GET", "/admin/api/users", true);
+  var x = new XMLHttpRequest(); x.open("GET", "/admin/api/users", true);
   x.onload = function() {
     var users = JSON.parse(x.responseText);
     var tbody = document.getElementById("users-tbody");
-    if (!users || users.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text3)">No users</td></tr>';
-      return;
-    }
+    if (!users || users.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text3)">No users</td></tr>'; return; }
     var html = "";
     for (var i = 0; i < users.length; i++) {
       var u = users[i];
-      var status = u.online ? '<span class="badge badge-on">Online</span>' : '<span class="badge badge-off">Offline</span>';
-      var id_esc = esc(u.client_id);
-      html += '<tr>' +
-        '<td>' + id_esc + '</td>' +
-        '<td>' + status + '</td>' +
-        '<td>' + fmtBytes(u.max_bytes) + '</td>' +
-        '<td>' + fmtTime(u.created_at) + '</td>' +
-        '<td>' + (u.last_seen ? fmtTime(u.last_seen) : '-') + '</td>' +
-        '<td>' +
-          '<button class="btn btn-sm btn-primary" onclick="showConfig(\'' + id_esc + '\')" title="Config">🔧</button> ' +
-          '<button class="btn btn-sm btn-ghost" onclick="disconnectUser(\'' + id_esc + '\')" title="Disconnect">⏹</button> ' +
-          '<button class="btn btn-sm btn-danger" onclick="deleteUser(\'' + id_esc + '\')" title="Delete">✕</button>' +
-        '</td></tr>';
+      var st = u.online ? '<span class="badge badge-on">Online</span>' : '<span class="badge badge-off">Offline</span>';
+      var id = esc(u.client_id);
+      html += '<tr><td>' + id + '</td><td>' + st + '</td><td>' + fmtBytes(u.max_bytes) + '</td><td>' + fmtTime(u.created_at) + '</td><td>' + (u.last_seen ? fmtTime(u.last_seen) : '-') + '</td><td>' +
+        '<button class="btn btn-sm btn-primary" onclick="showConfig(\'' + id.replace(/'/g,"\\'") + '\')">Cfg</button> ' +
+        '<button class="btn btn-sm btn-ghost" onclick="disconnectUser(\'' + id.replace(/'/g,"\\'") + '\')">Dis</button> ' +
+        '<button class="btn btn-sm btn-danger" onclick="deleteUser(\'' + id.replace(/'/g,"\\'") + '\')">Del</button></td></tr>';
     }
     tbody.innerHTML = html;
   };
   x.send();
 }
 
-function restartServer() {
-  if (!confirm("Restart VPN?")) return;
-  var x = new XMLHttpRequest();
-  x.open("POST", "/admin/api/restart", true);
-  x.onload = function() { toast("Restarting..."); };
-  x.send();
-}
+function restartServer() { if (!confirm("Restart VPN?")) return; var x = new XMLHttpRequest(); x.open("POST", "/admin/api/restart", true); x.onload = function() { toast("Restarting..."); }; x.send(); }
 
-function disconnectUser(id) {
-  var x = new XMLHttpRequest();
-  x.open("GET", "/admin/api/disconnect?client_id=" + encodeURIComponent(id), true);
-  x.onload = function() { loadUsers(); toast("Disconnected"); };
-  x.send();
-}
+function disconnectUser(id) { var x = new XMLHttpRequest(); x.open("GET", "/admin/api/disconnect?client_id=" + encodeURIComponent(id), true); x.onload = function() { loadUsers(); toast("Disconnected"); }; x.send(); }
 
-function deleteUser(id) {
-  if (!confirm("Delete " + id + "?")) return;
-  var x = new XMLHttpRequest();
-  x.open("DELETE", "/admin/api/users/" + encodeURIComponent(id), true);
-  x.onload = function() { loadUsers(); toast("Deleted"); };
-  x.send();
-}
+function deleteUser(id) { if (!confirm("Delete " + id + "?")) return; var x = new XMLHttpRequest(); x.open("DELETE", "/admin/api/users/" + encodeURIComponent(id), true); x.onload = function() { loadUsers(); toast("Deleted"); }; x.send(); }
 
 function showConfig(id) {
-  var x = new XMLHttpRequest();
-  x.open("GET", "/admin/api/config-link?client_id=" + encodeURIComponent(id), true);
+  var x = new XMLHttpRequest(); x.open("GET", "/admin/api/config-link?client_id=" + encodeURIComponent(id), true);
   x.onload = function() {
     var d = JSON.parse(x.responseText);
-    document.getElementById("modal-body").innerHTML =
-      '<div style="line-height:1.8">' +
-      '<b>Client ID:</b> ' + esc(id) + '<br>' +
-      '<b>Config Link:</b><div class="link-box">' + esc(d.link) + '</div></div>' +
-      '<div style="margin-top:12px">' +
-      '<button class="btn btn-sm btn-primary" onclick="copyText(\'' + esc(d.link) + '\')">Copy</button> ' +
-      '<button class="btn btn-sm btn-ghost" onclick="showQR(\'' + esc(d.link) + '\')">QR</button></div>';
+    document.getElementById("modal-body").innerHTML = '<div style="line-height:1.8"><b>Client ID:</b> ' + esc(id) + '<br><b>Config Link:</b><div class="link-box">' + esc(d.link) + '</div></div><div style="margin-top:12px"><button class="btn btn-sm btn-primary" onclick="copyText(\'' + esc(d.link).replace(/'/g,"\\'") + '\')">Copy</button> <button class="btn btn-sm btn-ghost" onclick="showQR(\'' + esc(d.link).replace(/'/g,"\\'") + '\')">QR</button></div>';
     document.getElementById("modal-overlay").classList.add("show");
   };
   x.send();
 }
 
-function showQR(data) {
-  document.getElementById("modal-body").innerHTML =
-    '<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(data) + '" style="width:280px;display:block;margin:0 auto;border-radius:8px">';
-}
+function showQR(data) { document.getElementById("modal-body").innerHTML = '<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(data) + '" style="width:280px;display:block;margin:0 auto;border-radius:8px">'; }
 
-function closeModal() {
-  document.getElementById("modal-overlay").classList.remove("show");
-}
+function closeModal() { document.getElementById("modal-overlay").classList.remove("show"); }
 
-function copyText(t) {
-  navigator.clipboard.writeText(t).then(function(){ toast("Copied!"); });
-}
+function copyText(t) { navigator.clipboard.writeText(t).then(function(){ toast("Copied!"); }); }
 
 function saveOAuth() {
   var val = document.getElementById("oauth-client-id").value;
-  var x = new XMLHttpRequest();
-  x.open("POST", "/admin/api/settings", true);
-  x.setRequestHeader("Content-Type", "application/json");
+  var x = new XMLHttpRequest(); x.open("POST", "/admin/api/settings", true); x.setRequestHeader("Content-Type", "application/json");
   x.onload = function() { toast("Saved"); };
   x.send(JSON.stringify({key:"yandex_oauth_client_id",value:val}));
 }
 
 function getClientId() {
-  var x = new XMLHttpRequest();
-  x.open("GET", "/admin/api/settings", true);
+  var x = new XMLHttpRequest(); x.open("GET", "/admin/api/settings", true);
   x.onload = function() {
     var s = JSON.parse(x.responseText);
-    if (s.yandex_oauth_client_id) {
-      document.getElementById("oauth-client-id").value = s.yandex_oauth_client_id;
-      toast("Loaded");
-      return;
-    }
+    if (s.yandex_oauth_client_id) { document.getElementById("oauth-client-id").value = s.yandex_oauth_client_id; toast("Loaded"); return; }
     var cid = prompt("Enter Yandex OAuth Client ID:");
-    if (cid && cid.length > 5) {
-      document.getElementById("oauth-client-id").value = cid;
-      var y = new XMLHttpRequest();
-      y.open("POST", "/admin/api/settings", true);
-      y.setRequestHeader("Content-Type", "application/json");
-      y.onload = function() { toast("Saved"); };
-      y.send(JSON.stringify({key:"yandex_oauth_client_id",value:cid}));
+    if (cid && cid.length > 5) { document.getElementById("oauth-client-id").value = cid;
+      var y = new XMLHttpRequest(); y.open("POST", "/admin/api/settings", true); y.setRequestHeader("Content-Type", "application/json");
+      y.onload = function() { toast("Saved"); }; y.send(JSON.stringify({key:"yandex_oauth_client_id",value:cid}));
     }
   };
   x.send();
 }
 
-// --- Navigation ---
-
 function switchTab(name) {
-  var pages = ["dashboard", "users", "settings"];
-  for (var i = 0; i < pages.length; i++) {
-    var p = document.getElementById("page-" + pages[i]);
-    if (p) p.classList.remove("active");
-    var n = document.getElementById("nav-" + pages[i]);
-    if (n) n.classList.remove("active");
-  }
-  var page = document.getElementById("page-" + name);
-  if (page) page.classList.add("active");
-  var nav = document.getElementById("nav-" + name);
-  if (nav) nav.classList.add("active");
+  var pages = ["dashboard","users","settings"];
+  for (var i = 0; i < pages.length; i++) { var p = document.getElementById("page-" + pages[i]); if (p) p.classList.remove("active"); var n = document.getElementById("nav-" + pages[i]); if (n) n.classList.remove("active"); }
+  document.getElementById("page-" + name).classList.add("active");
+  document.getElementById("nav-" + name).classList.add("active");
   document.getElementById("page-title").textContent = name.charAt(0).toUpperCase() + name.slice(1);
-  if (name === "dashboard") loadStats();
-  if (name === "users") loadUsers();
+  if (name === "dashboard") loadStats(); if (name === "users") loadUsers();
 }
 
-// --- Wire up event listeners ---
-
-document.getElementById("theme-btn").addEventListener("click", function() {
-  document.getElementById("nav-users").addEventListener("click", function(){ switchTab("users"); });
-  document.getElementById("nav-settings").addEventListener("click", function(){ switchTab("settings"); });
-
-  document.getElementById("refresh-btn").addEventListener("click", loadStats);
-
-  document.getElementById("restart-btn").addEventListener("click", restartServer);
-
-  document.getElementById("add-user-btn").addEventListener("click", function() {
-    document.getElementById("add-form-card").style.display = "block";
-  });
-  document.getElementById("cancel-add-btn").addEventListener("click", function() {
-    document.getElementById("add-form-card").style.display = "none";
-  });
-  document.getElementById("create-user-btn").addEventListener("click", function() {
-    var cid = document.getElementById("new-client-id").value.trim();
-    var key = document.getElementById("new-key").value.trim();
-    if (!cid) { toast("Enter Client ID"); return; }
-    var x = new XMLHttpRequest();
-    x.open("POST", "/admin/api/users", true);
-    x.setRequestHeader("Content-Type", "application/json");
-    x.onload = function() {
-      var d = JSON.parse(x.responseText);
-      toast("User created!");
-      document.getElementById("new-client-id").value = "";
-      document.getElementById("new-key").value = "";
-      document.getElementById("add-form-card").style.display = "none";
-      loadUsers();
-    };
-    x.onerror = function() { toast("Error creating user"); };
-    x.send(JSON.stringify({client_id: cid, key_hex: key}));
-  });
-
-  document.getElementById("save-oauth-btn").addEventListener("click", saveOAuth);
-  document.getElementById("get-client-id-btn").addEventListener("click", getClientId);
-
-  document.getElementById("modal-close-btn").addEventListener("click", closeModal);
-  document.getElementById("modal-overlay").addEventListener("click", function(e) {
-    if (e.target === this) closeModal();
-  });
-
-function showAddForm() {
-  document.getElementById("add-form-card").style.display = "block";
-}
-
-function hideAddForm() {
-  document.getElementById("add-form-card").style.display = "none";
-}
-
-function createUser() {
-  var cid = document.getElementById("new-client-id").value.trim();
-  var key = document.getElementById("new-key").value.trim();
-  if (!cid) { toast("Enter Client ID"); return; }
-  var x = new XMLHttpRequest();
-  x.open("POST", "/admin/api/users", true);
-  x.setRequestHeader("Content-Type", "application/json");
-  x.onload = function() {
-    var d = JSON.parse(x.responseText);
-    toast("User created!");
-    document.getElementById("new-client-id").value = "";
-    document.getElementById("new-key").value = "";
-    hideAddForm();
-    loadUsers();
-  };
-  x.onerror = function() { toast("Error creating user"); };
-  x.send(JSON.stringify({client_id: cid, key_hex: key}));
-}
-
-// Wire up
+// Wire up all buttons
 document.getElementById("nav-dashboard").onclick = function(){ switchTab("dashboard"); };
 document.getElementById("nav-users").onclick = function(){ switchTab("users"); };
 document.getElementById("nav-settings").onclick = function(){ switchTab("settings"); };
 document.getElementById("refresh-btn").onclick = loadStats;
 document.getElementById("restart-btn").onclick = restartServer;
-document.getElementById("add-user-btn").onclick = showAddForm;
-document.getElementById("cancel-add-btn").onclick = hideAddForm;
-document.getElementById("create-user-btn").onclick = createUser;
+document.getElementById("add-user-btn").onclick = function(){ document.getElementById("add-form-card").style.display = "block"; };
+document.getElementById("cancel-add-btn").onclick = function(){ document.getElementById("add-form-card").style.display = "none"; };
+document.getElementById("create-user-btn").onclick = function() {
+  var cid = document.getElementById("new-client-id").value.trim();
+  var key = document.getElementById("new-key").value.trim();
+  if (!cid) { toast("Enter Client ID"); return; }
+  var x = new XMLHttpRequest(); x.open("POST", "/admin/api/users", true); x.setRequestHeader("Content-Type", "application/json");
+  x.onload = function() { var d = JSON.parse(x.responseText); toast("User created!"); document.getElementById("new-client-id").value = ""; document.getElementById("new-key").value = ""; document.getElementById("add-form-card").style.display = "none"; loadUsers(); };
+  x.onerror = function() { toast("Error creating user"); };
+  x.send(JSON.stringify({client_id: cid, key_hex: key}));
+};
 document.getElementById("save-oauth-btn").onclick = saveOAuth;
 document.getElementById("get-client-id-btn").onclick = getClientId;
 document.getElementById("modal-close-btn").onclick = closeModal;
 document.getElementById("modal-overlay").onclick = function(e) { if (e.target === this) closeModal(); };
-document.getElementById("theme-btn").onclick = function() {
-  theme = (theme === "dark") ? "light" : "dark";
-  document.documentElement.setAttribute("data-theme", theme);
-  localStorage.setItem("ymt_theme", theme);
-};
-document.getElementById("lang-btn").onclick = function() {
-  lang = (lang === "ru") ? "en" : "ru";
-  localStorage.setItem("ymt_lang", lang);
-  document.getElementById("lang-btn").textContent = (lang === "ru") ? "🌐 RU" : "🌐 EN";
-};
-document.getElementById("logout-btn").onclick = function() {
-  document.cookie = "ymt_session=;expires=Thu,01 Jan 1970;path=/";
-  location = "/admin/login";
-};
+document.getElementById("theme-btn").onclick = function() { theme = (theme === "dark") ? "light" : "dark"; document.documentElement.setAttribute("data-theme", theme); localStorage.setItem("ymt_theme", theme); };
+document.getElementById("lang-btn").onclick = function() { lang = (lang === "ru") ? "en" : "ru"; localStorage.setItem("ymt_lang", lang); document.getElementById("lang-btn").textContent = (lang === "ru") ? "RU" : "EN"; };
+document.getElementById("logout-btn").onclick = function() { document.cookie = "ymt_session=;expires=Thu,01 Jan 1970;path=/"; location = "/admin/login"; };
 
 loadStats();
 loadUsers();
-
-  document.getElementById("lang-btn").addEventListener("click", function() {
-    lang = (lang === "ru") ? "en" : "ru";
-    localStorage.setItem("ymt_lang", lang);
-    document.getElementById("lang-btn").textContent = (lang === "ru") ? "🌐 RU" : "🌐 EN";
-  });
-
-  document.getElementById("logout-btn").addEventListener("click", function() {
-    document.cookie = "ymt_session=;expires=Thu,01 Jan 1970;path=/";
-    location = "/admin/login";
-  });
-
-  // Init
-loadStats();
-loadUsers();
-
 </script>
 </body>
 </html>
