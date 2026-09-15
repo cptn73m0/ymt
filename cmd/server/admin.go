@@ -225,6 +225,7 @@ func (s *Server) registerAdminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/api/restart", s.auth(s.apiRestart))
 	mux.HandleFunc("/admin/api/disconnect", s.auth(s.apiDisconnect))
 	mux.HandleFunc("/admin/api/config-link", s.auth(s.apiConfigLink))
+	mux.HandleFunc("/admin/api/decrypt-link", s.apiDecryptLink)
 	mux.HandleFunc("/admin/api/qr", s.auth(s.apiQR))
 	mux.HandleFunc("/admin/api/settings", s.auth(s.apiSettings))
 	mux.HandleFunc("/admin/oauth/callback", s.oauthCallback)
@@ -380,6 +381,22 @@ func (s *Server) apiConfigLink(w http.ResponseWriter, r *http.Request) {
 		ClientID: user.ClientID, Key: "KEY_REDACTED", Domain: s.cfg.Domain,
 	}, getLinkKey(s.db))
 	json.NewEncoder(w).Encode(map[string]string{"link": link})
+}
+
+func (s *Server) apiDecryptLink(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Link string `json:"link"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "bad request", 400)
+		return
+	}
+	payload, err := decryptConfigLink(req.Link, getLinkKey(s.db))
+	if err != nil {
+		http.Error(w, "invalid link", 400)
+		return
+	}
+	json.NewEncoder(w).Encode(payload)
 }
 
 func (s *Server) apiQR(w http.ResponseWriter, r *http.Request) {

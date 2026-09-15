@@ -103,6 +103,44 @@ class HomeScreen extends StatelessWidget {
 
             const Spacer(),
 
+            // Big connect button
+            if (tunnel.isConfigured)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    if (tunnel.isRunning) {
+                      tunnel.stop();
+                    } else {
+                      tunnel.start([]);
+                    }
+                  },
+                  icon: Icon(tunnel.isRunning ? Icons.power_settings_new : Icons.power_settings_new),
+                  label: Text(tunnel.isRunning ? 'Disconnect' : 'Connect VPN',
+                    style: const TextStyle(fontSize: 16)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: tunnel.isRunning ? Colors.red : const Color(0xFF3B82F6),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+              ),
+
+            if (!tunnel.isConfigured)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => Navigator.pushNamed(context, '/add-config'),
+                  icon: const Icon(Icons.add_link),
+                  label: const Text('Add Configuration', style: TextStyle(fontSize: 16)),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+              ),
+
+            const SizedBox(height: 16),
+
             // Config info
             if (tunnel.isConfigured)
               Card(

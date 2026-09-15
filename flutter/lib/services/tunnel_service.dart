@@ -17,11 +17,13 @@ class TunnelService extends ChangeNotifier {
 
   void setConfig(TunnelConfig config) {
     _config = config;
+    notifyListeners();
   }
 
   void clearConfig() {
     _config = null;
     _isRunning = false;
+    notifyListeners();
   }
 
   Future<TunnelConfig?> decryptLink(String link, String serverHost) async {
@@ -34,6 +36,7 @@ class TunnelService extends ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _config = TunnelConfig.fromJson(data);
+        notifyListeners();
         return _config;
       }
     } catch (e) {
@@ -55,9 +58,9 @@ class TunnelService extends ChangeNotifier {
           'allowed_apps': allowedApps,
         });
         _isRunning = result ?? false;
+        notifyListeners();
         return _isRunning;
       } else if (Platform.isWindows) {
-        // Start ymt-client as subprocess
         final result = await Process.start(
           'ymt-client.exe',
           [
@@ -69,6 +72,7 @@ class TunnelService extends ChangeNotifier {
           runInShell: true,
         );
         _isRunning = true;
+        notifyListeners();
         return true;
       }
     } catch (e) {
@@ -88,5 +92,6 @@ class TunnelService extends ChangeNotifier {
       print('Stop error: $e');
     }
     _isRunning = false;
+    notifyListeners();
   }
 }
