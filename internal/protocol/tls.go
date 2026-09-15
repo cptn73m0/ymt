@@ -3,13 +3,18 @@ package protocol
 import (
 	"crypto/hmac"
 	"crypto/rand"
+	"crypto/rsa"
 	"crypto/sha256"
+	"crypto/tls"
+	"crypto/x509"
+	"crypto/x509/pkix"
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"math/big"
 	"net"
 	"sync"
 	"time"
@@ -59,57 +64,93 @@ type Key struct {
 	Bytes [32]byte
 }
 
-// DefaultFingerprint is a preset mimicking Yandex Music Android
-func DefaultFingerprint() *utls.ClientHelloID {
-	return &utls.HelloAndroid_11_Chrome_96
-	// Will be customized after Phase 0 reverse engineering
+// DefaultFingerprint returns a Chrome-based fingerprint preset
+func DefaultFingerprint() utls.ClientHelloID {
+	return utls.HelloChrome_112
 }
 
-// ServerTLSHandshake performs TLS handshake as server, emulating YM server fingerprint
-func ServerTLSHandshake(conn net.Conn, fingerprint string) (*utls.UConn, error) {
-	tcpConn := conn.(*net.TCPConn)
+var (
+	onceCert  sync.Once
+	cachedCert tls.Certificate
+	cachedErr  error
+)
+
+// getOrGenerateCert creates a self-signed certificate for development/testing
+func getOrGenerateCert() (tls.Certificate, error) {
+	onceCert.Do(func() {
+		key, err := rsa.GenerateKey(rand.Reader, 2048)
+		if err != nil {
+			cachedErr = err
+			return
+		}
+		tmpl := &x509.Certificate{
+			SerialNumber:          big.NewInt(time.Now().UnixNano()),
+			Subject:               pkix.Name{CommonName: "YMT Tunnel"},
+			NotBefore:             time.Now().Add(-24 * time.Hour),
+			NotAfter:              time.Now().Add(365 * 24 * time.Hour),
+			KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
+			ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+			BasicConstraintsValid: true,
+			IsCA:                  true,
+		}
+		certDer, err := x509.CreateCertificate(rand.Reader, tmpl, tmpl, &key.PublicKey, key)
+		if err != nil {
+			cachedErr = err
+			return
+		}
+		cachedCert = tls.Certificate{
+			Certificate: [][]byte{certDer},
+			PrivateKey:  key,
+		}
+	})
+	return cachedCert, cachedErr
+}
+
+// ServerTLSHandshake performs TLS handshake as server.
+// Uses standard crypto/tls - the client side mimics YM fingerprint.
+func ServerTLSHandshake(conn net.Conn, fingerprint string) (net.Conn, error) {
+	tcpConn, _ := conn.(*net.TCPConn)
 	if tcpConn != nil {
 		tcpConn.SetNoDelay(true)
 	}
 
-	// Use default Android Chrome fingerprint as baseline
-	// After Phase 0, this will be customized with real YM fingerprint
-	config := &utls.Config{
-		Certificates: []utls.Certificate{
-			// In production, load from tls_cert/tls_key files
-		},
-		PreferServerCipherSuites: true,
+	cert, err := getOrGenerateCert()
+	if err != nil {
+		return nil, fmt.Errorf("cert: %w", err)
 	}
 
-	uconn := utls.Server(conn, config)
+	config := &tls.Config{
+		Certificates:             []tls.Certificate{cert},
+		PreferServerCipherSuites: true,
+		MinVersion:               tls.VersionTLS13,
+		MaxVersion:               tls.VersionTLS13,
+	}
 
-	if err := uconn.Handshake(); err != nil {
+	tlsConn := tls.Server(conn, config)
+	if err := tlsConn.Handshake(); err != nil {
 		return nil, fmt.Errorf("tls handshake: %w", err)
 	}
-
-	return uconn, nil
+	return tlsConn, nil
 }
 
-// ClientTLSHandshake connects to server with YM-like TLS fingerprint
-func ClientTLSHandshake(conn net.Conn, serverName string, fingerprint string) (*utls.UConn, error) {
-	tcpConn := conn.(*net.TCPConn)
+// ClientTLSHandshake uses utls to mimic Yandex Music TLS fingerprint
+func ClientTLSHandshake(conn net.Conn, serverName string, fingerprint string) (net.Conn, error) {
+	tcpConn, _ := conn.(*net.TCPConn)
 	if tcpConn != nil {
 		tcpConn.SetNoDelay(true)
 	}
 
 	helloID := DefaultFingerprint()
-
-	config := &utls.Config{
+	uconn := utls.UClient(conn, &utls.Config{
 		ServerName:         serverName,
 		InsecureSkipVerify: false,
-	}
-
-	uconn := utls.UClient(conn, config, *helloID)
+		MinVersion:         tls.VersionTLS13,
+		MaxVersion:         tls.VersionTLS13,
+	}, helloID)
 
 	if err := uconn.Handshake(); err != nil {
 		return nil, fmt.Errorf("tls handshake: %w", err)
 	}
-
 	return uconn, nil
 }
 
@@ -257,7 +298,12 @@ func MasqueradePayload(ciphertext []byte) ([]byte, error) {
 
 	// Add padding to reach typical YM response size distribution
 	// YM responses are typically 512-2048 bytes
-	paddingLen := int(ciphertext[0] % 256) // deterministic from data
+	var paddingLen int
+	if len(ciphertext) > 0 {
+		paddingLen = int(ciphertext[0]) % 256
+	} else {
+		paddingLen = 64
+	}
 	pad := make([]byte, paddingLen)
 	rand.Read(pad)
 	env.Result.Padding = base64.StdEncoding.EncodeToString(pad)
