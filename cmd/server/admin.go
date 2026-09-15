@@ -216,6 +216,32 @@ func encryptConfigLink(payload *ConfigPayload, key [32]byte) (string, error) {
 	return "ymt://" + base64.RawURLEncoding.EncodeToString(append(nonce, ciphertext...)), nil
 }
 
+func decryptConfigLink(encoded string, key [32]byte) (*ConfigPayload, error) {
+	if !strings.HasPrefix(encoded, "ymt://") {
+		return nil, fmt.Errorf("invalid prefix")
+	}
+	raw, err := base64.RawURLEncoding.DecodeString(encoded[6:])
+	if err != nil {
+		return nil, err
+	}
+	if len(raw) < 24 {
+		return nil, fmt.Errorf("too short")
+	}
+	aead, err := chacha20poly1305.NewX(key[:])
+	if err != nil {
+		return nil, err
+	}
+	nonce := raw[:24]
+	ciphertext := raw[24:]
+	data, err := aead.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		return nil, err
+	}
+	var p ConfigPayload
+	json.Unmarshal(data, &p)
+	return &p, nil
+}
+
 func (s *Server) registerAdminRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/login", s.loginPage)
 	mux.HandleFunc("/admin", s.auth(s.adminPage))
@@ -393,7 +419,7 @@ func (s *Server) apiDecryptLink(w http.ResponseWriter, r *http.Request) {
 	}
 	payload, err := decryptConfigLink(req.Link, getLinkKey(s.db))
 	if err != nil {
-		http.Error(w, "invalid link", 400)
+		http.Error(w, "invalid link: "+err.Error(), 400)
 		return
 	}
 	json.NewEncoder(w).Encode(payload)
