@@ -227,7 +227,8 @@ func (s *Server) proxyData(framer *http2.Framer, data []byte) {
 	defer target.Close()
 
 	if len(payload) > 0 {
-target.Write(payload)
+		target.Write(payload)
+	}
 
 	// bi-directional copy
 	var wg sync.WaitGroup
@@ -253,21 +254,6 @@ target.Write(payload)
 	}()
 
 	wg.Wait()
-}
-			if df, ok := f.(*http2.DataFrame); ok && df.StreamID == 3 {
-				n, _ := target.Write(df.Data())
-				s.mu.Lock()
-				s.bytesUp += int64(n)
-				s.mu.Unlock()
-			}
-			if pp, ok := f.(*http2.PingFrame); ok && !pp.IsAck() {
-				framer.WritePing(true, pp.Data())
-			}
-		}
-	}()
-
-	buf := make([]byte, 16384)
-	io.CopyBuffer(&h2StreamWriter{framer, 3}, target, buf)
 }
 
 type h2StreamWriter struct {
