@@ -52,6 +52,7 @@ jobs:
       - name: Build Go client
         run: |
           cd cmd/client
+          go mod tidy
           go build -o ../../ymt-client.exe .
 
       - name: Upload Windows client
