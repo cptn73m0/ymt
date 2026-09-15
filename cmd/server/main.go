@@ -35,16 +35,20 @@ type Server struct {
 }
 
 type Config struct {
-	Listen  string
-	DataDir string
-	Domain  string
-	TLSCert string
-	TLSKey  string
+	Listen       string
+	AdminAddr    string
+	AdminPass    string
+	DataDir      string
+	Domain       string
+	TLSCert      string
+	TLSKey       string
 }
 
 func main() {
 	cfg := Config{}
-	flag.StringVar(&cfg.Listen, "listen", ":443", "Listen address")
+	flag.StringVar(&cfg.Listen, "listen", ":443", "Tunnel listen address")
+	flag.StringVar(&cfg.AdminAddr, "admin", "0.0.0.0:8080", "Admin UI listen address")
+	flag.StringVar(&cfg.AdminPass, "admin-pass", "", "Admin UI password (auto-generated if empty)")
 	flag.StringVar(&cfg.DataDir, "data", "/var/lib/ymt", "Data directory")
 	flag.StringVar(&cfg.Domain, "domain", "", "Domain name")
 	flag.StringVar(&cfg.TLSCert, "cert", "", "TLS cert file")
@@ -70,20 +74,24 @@ func main() {
 		srv.db.SetSetting("admin_token", token)
 		srv.db.SetSetting("admin_password", pass)
 		log.Println("=== FIRST RUN ===")
-		log.Printf("Admin panel: http://localhost:8080/admin")
+		log.Printf("Admin panel: http://%s/admin", cfg.AdminAddr)
 		log.Printf("Login: admin / %s", pass)
 		log.Printf("API token: %s", token)
 		log.Println("=================")
 	}
 	srv.adminToken = srv.db.GetSetting("admin_token")
 	srv.adminPass = srv.db.GetSetting("admin_password")
+	if cfg.AdminPass != "" {
+		srv.adminPass = cfg.AdminPass
+		srv.db.SetSetting("admin_password", cfg.AdminPass)
+	}
 
 	// Admin web server
 	adminMux := http.NewServeMux()
 	srv.registerAdminRoutes(adminMux)
-	adminSrv := &http.Server{Addr: "127.0.0.1:8080", Handler: adminMux}
+	adminSrv := &http.Server{Addr: cfg.AdminAddr, Handler: adminMux}
 	go func() {
-		log.Printf("Admin UI on http://localhost:8080/admin")
+		log.Printf("Admin UI on http://%s/admin", cfg.AdminAddr)
 		adminSrv.ListenAndServe()
 	}()
 
