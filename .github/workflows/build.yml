@@ -22,13 +22,15 @@ jobs:
         with:
           channel: 'stable'
 
+      - name: Generate Android template (new embedding)
+        run: |
+          flutter create --project-name ymt_client --platforms android /tmp/flutter_android
+          rm -rf flutter/android
+          cp -r /tmp/flutter_android/android flutter/android
+
       - name: Build Android APK
         run: |
           cd flutter
-          flutter create --platforms android .
-          echo "flutter.sdk=$FLUTTER_ROOT" > android/local.properties 2>/dev/null || true
-          # Inject custom VpnService code
-          mkdir -p android/app/src/main/kotlin/com/ymt/app
           flutter pub get
           flutter build apk --release
 
