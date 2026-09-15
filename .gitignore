@@ -1,0 +1,11 @@
+.exe
+*.test
+*.out
+/tmp/
+/vendor/
+.DS_Store
+*.db
+*.db-journal
+*.db-wal
+config.yaml
+.env

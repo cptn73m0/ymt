@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YMT Panel</title>
+<script src="https://unpkg.com/htmx.org@1.9.11"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f0f12; color: #e0e0e0; }
+.sidebar { position: fixed; left: 0; top: 0; width: 220px; height: 100vh; background: #1a1a24; padding: 24px 16px; }
+.sidebar h1 { font-size: 18px; margin-bottom: 24px; color: #fff; }
+.sidebar nav a { display: block; padding: 10px 12px; color: #999; text-decoration: none; border-radius: 6px; margin-bottom: 4px; }
+.sidebar nav a:hover, .sidebar nav a.active { background: #2a2a38; color: #fff; }
+.main { margin-left: 220px; padding: 32px; }
+.card { background: #1a1a24; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+.card h2 { font-size: 16px; margin-bottom: 16px; color: #aaa; }
+.stat-row { display: flex; gap: 16px; }
+.stat { flex: 1; }
+.stat-value { font-size: 28px; font-weight: 600; color: #fff; }
+.stat-label { font-size: 12px; color: #666; margin-top: 4px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #2a2a38; font-size: 13px; }
+th { color: #666; font-weight: 500; }
+td { color: #ccc; }
+.btn { display: inline-block; padding: 8px 16px; background: #3b82f6; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; }
+.btn:hover { background: #2563eb; }
+.btn-danger { background: #ef4444; }
+.btn-danger:hover { background: #dc2626; }
+form { display: flex; gap: 8px; align-items: end; flex-wrap: wrap; }
+form input { background: #2a2a38; border: 1px solid #3a3a48; padding: 8px 12px; border-radius: 6px; color: #fff; font-size: 13px; }
+form label { font-size: 12px; color: #666; display: block; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <h1>YMT Server</h1>
+  <nav>
+    <a href="/" class="active">Dashboard</a>
+    <a href="/users">Users</a>
+    <a href="/settings">Settings</a>
+  </nav>
+</div>
+<div class="main">
+  <div class="stat-row">
+    <div class="card stat">
+      <div class="stat-value" id="active-users">0</div>
+      <div class="stat-label">Active Users</div>
+    </div>
+    <div class="card stat">
+      <div class="stat-value" id="total-traffic">0 B</div>
+      <div class="stat-label">Total Traffic</div>
+    </div>
+    <div class="card stat">
+      <div class="stat-value" id="uptime">-</div>
+      <div class="stat-label">Uptime</div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Users</h2>
+    <table>
+      <thead><tr><th>Client ID</th><th>Created</th><th>Last Seen</th><th>Traffic</th><th></th></tr></thead>
+      <tbody id="users-table" hx-get="/api/users" hx-trigger="load" hx-swap="innerHTML">
+        <tr><td colspan="5">Loading...</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top: 16px;">
+      <form hx-post="/api/users" hx-target="#users-table" hx-swap="beforeend">
+        <div><label>Client ID</label><input name="client_id" placeholder="my-phone" required></div>
+        <div><label>Key (hex)</label><input name="key_hex" placeholder="64 hex chars" required></div>
+        <button class="btn" type="submit">Add User</button>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>
