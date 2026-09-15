@@ -233,6 +233,13 @@ func (s *Server) auth(next http.HandlerFunc) http.HandlerFunc {
 		}
 		cookie, err := r.Cookie("ymt_session")
 		if err != nil || cookie.Value != s.adminToken {
+			// API calls get JSON 401, browser gets redirect
+			if strings.HasPrefix(r.URL.Path, "/admin/api/") {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusUnauthorized)
+				json.NewEncoder(w).Encode(map[string]string{"error": "unauthorized"})
+				return
+			}
 			http.Redirect(w, r, "/admin/login", http.StatusFound)
 			return
 		}
@@ -294,6 +301,7 @@ func (s *Server) apiUsers(w http.ResponseWriter, r *http.Request) {
 		}
 		user, err := s.db.CreateUser(req.ClientID, req.KeyHex)
 		if err != nil {
+			log.Printf("create user error: %v (client_id=%s)", err, req.ClientID)
 			http.Error(w, err.Error(), 500)
 			return
 		}

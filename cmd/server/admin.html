@@ -335,9 +335,7 @@ function switchTab(name) {
 
 // --- Wire up event listeners ---
 
-document.addEventListener("DOMContentLoaded", function() {
-
-  document.getElementById("nav-dashboard").addEventListener("click", function(){ switchTab("dashboard"); });
+document.getElementById("theme-btn").addEventListener("click", function() {
   document.getElementById("nav-users").addEventListener("click", function(){ switchTab("users"); });
   document.getElementById("nav-settings").addEventListener("click", function(){ switchTab("settings"); });
 
@@ -378,11 +376,63 @@ document.addEventListener("DOMContentLoaded", function() {
     if (e.target === this) closeModal();
   });
 
-  document.getElementById("theme-btn").addEventListener("click", function() {
-    theme = (theme === "dark") ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("ymt_theme", theme);
-  });
+function showAddForm() {
+  document.getElementById("add-form-card").style.display = "block";
+}
+
+function hideAddForm() {
+  document.getElementById("add-form-card").style.display = "none";
+}
+
+function createUser() {
+  var cid = document.getElementById("new-client-id").value.trim();
+  var key = document.getElementById("new-key").value.trim();
+  if (!cid) { toast("Enter Client ID"); return; }
+  var x = new XMLHttpRequest();
+  x.open("POST", "/admin/api/users", true);
+  x.setRequestHeader("Content-Type", "application/json");
+  x.onload = function() {
+    var d = JSON.parse(x.responseText);
+    toast("User created!");
+    document.getElementById("new-client-id").value = "";
+    document.getElementById("new-key").value = "";
+    hideAddForm();
+    loadUsers();
+  };
+  x.onerror = function() { toast("Error creating user"); };
+  x.send(JSON.stringify({client_id: cid, key_hex: key}));
+}
+
+// Wire up
+document.getElementById("nav-dashboard").onclick = function(){ switchTab("dashboard"); };
+document.getElementById("nav-users").onclick = function(){ switchTab("users"); };
+document.getElementById("nav-settings").onclick = function(){ switchTab("settings"); };
+document.getElementById("refresh-btn").onclick = loadStats;
+document.getElementById("restart-btn").onclick = restartServer;
+document.getElementById("add-user-btn").onclick = showAddForm;
+document.getElementById("cancel-add-btn").onclick = hideAddForm;
+document.getElementById("create-user-btn").onclick = createUser;
+document.getElementById("save-oauth-btn").onclick = saveOAuth;
+document.getElementById("get-client-id-btn").onclick = getClientId;
+document.getElementById("modal-close-btn").onclick = closeModal;
+document.getElementById("modal-overlay").onclick = function(e) { if (e.target === this) closeModal(); };
+document.getElementById("theme-btn").onclick = function() {
+  theme = (theme === "dark") ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("ymt_theme", theme);
+};
+document.getElementById("lang-btn").onclick = function() {
+  lang = (lang === "ru") ? "en" : "ru";
+  localStorage.setItem("ymt_lang", lang);
+  document.getElementById("lang-btn").textContent = (lang === "ru") ? "🌐 RU" : "🌐 EN";
+};
+document.getElementById("logout-btn").onclick = function() {
+  document.cookie = "ymt_session=;expires=Thu,01 Jan 1970;path=/";
+  location = "/admin/login";
+};
+
+loadStats();
+loadUsers();
 
   document.getElementById("lang-btn").addEventListener("click", function() {
     lang = (lang === "ru") ? "en" : "ru";
@@ -396,10 +446,9 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   // Init
-  loadStats();
-  loadUsers();
+loadStats();
+loadUsers();
 
-});
 </script>
 </body>
 </html>
