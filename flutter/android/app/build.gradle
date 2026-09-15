@@ -1,44 +1,67 @@
-plugins {
-    id "com.android.application"
-    id "kotlin-android"
-    id "dev.flutter.flutter-gradle-plugin"
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
 }
 
+def flutterRoot = localProperties.getProperty('flutter.sdk')
+if (flutterRoot == null) {
+    throw new GradleException("Flutter SDK not found. Set `flutter.sdk` in local.properties.")
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply from: "$flutterRoot/packages/flutter_tools/gradle/app_plugin_loader.gradle"
+
 android {
-    namespace = "com.ymt.app"
-    compileSdk = 34
-    ndkVersion = flutter.ndkVersion
+    namespace "com.ymt.app"
+    compileSdkVersion 34
+    ndkVersion flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = '1.8'
     }
 
     sourceSets {
-        getByName("main") {
-            java.srcDirs("src/main/kotlin")
-        }
+        main.java.srcDirs += 'src/main/kotlin'
     }
 
     defaultConfig {
-        applicationId = "com.ymt.app"
-        minSdk = 24
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        applicationId "com.ymt.app"
+        minSdkVersion 24
+        targetSdkVersion 34
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.debug
+            signingConfig signingConfigs.debug
         }
     }
 }
 
+flutter {
+    source '../..'
+}
+
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version")
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
