@@ -92,10 +92,13 @@ func (u *UserDB) GetUser(clientID string) (*User, error) {
 		clientID,
 	)
 	user := &User{}
-	var ls string
-	if err := row.Scan(&user.ID, &user.ClientID, &user.KeyHash, &user.Enabled, &user.MaxBytes, &user.CreatedAt, &ls); err != nil {
+	var createdAt string
+	var lastSeen string
+	if err := row.Scan(&user.ID, &user.ClientID, &user.KeyHash, &user.Enabled, &user.MaxBytes, &createdAt, &lastSeen); err != nil {
 		return nil, err
 	}
+	user.CreatedAt, _ = time.Parse(time.RFC3339, createdAt)
+	user.LastSeen, _ = time.Parse(time.RFC3339, lastSeen)
 	srv.mu.Lock()
 	_, user.Online = srv.activeConns[clientID]
 	srv.mu.Unlock()
@@ -148,10 +151,12 @@ func (u *UserDB) ListUsers() ([]User, error) {
 	srv.mu.Unlock()
 	for rows.Next() {
 		var u User
-		var ls string
-		if err := rows.Scan(&u.ID, &u.ClientID, &u.Enabled, &u.MaxBytes, &u.CreatedAt, &ls); err != nil {
+		var ls, ca string
+		if err := rows.Scan(&u.ID, &u.ClientID, &u.Enabled, &u.MaxBytes, &ca, &ls); err != nil {
 			return nil, err
 		}
+		u.CreatedAt, _ = time.Parse(time.RFC3339, ca)
+		u.LastSeen, _ = time.Parse(time.RFC3339, ls)
 		_, u.Online = ac[u.ClientID]
 		users = append(users, u)
 	}
