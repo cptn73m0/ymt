@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <application>
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="ymt"/>
+            </intent-filter>
+        </activity>
+        <service
+            android:name=".YMTVpnService"
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.net.VpnService"/>
+            </intent-filter>
+        </service>
+    </application>
+</manifest>
