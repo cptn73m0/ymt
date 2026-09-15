@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"html/template"
 	"io"
 	"log"
 	"net"
@@ -14,7 +13,6 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -164,7 +162,7 @@ func (s *Server) handleConn(raw net.Conn) {
 			}
 		}
 		if pp, ok := f.(*http2.PingFrame); ok && !pp.IsAck() {
-			framer.WritePing(true, pp.Data())
+			framer.WritePing(true, pp.Data)
 		}
 	}
 
@@ -191,7 +189,6 @@ func (s *Server) handleConn(raw net.Conn) {
 	// tunnel: relay stream 3 data bidirectionally via TCP proxy
 	// Simple mode: read 4-byte addr len + addr + 2-byte port from stream 3,
 	// connect, then bi-directional copy
-	var buf [1024]byte
 	for {
 		f, err := framer.ReadFrame()
 		if err != nil {
@@ -201,7 +198,7 @@ func (s *Server) handleConn(raw net.Conn) {
 			s.proxyData(framer, df.Data())
 		}
 		if pp, ok := f.(*http2.PingFrame); ok && !pp.IsAck() {
-			framer.WritePing(true, pp.Data())
+			framer.WritePing(true, pp.Data)
 		}
 	}
 }
@@ -301,7 +298,7 @@ func (r *h2StreamReader) Read(b []byte) (int, error) {
 			return n, nil
 		}
 		if pp, ok := f.(*http2.PingFrame); ok && !pp.IsAck() {
-			r.framer.WritePing(true, pp.Data())
+			r.framer.WritePing(true, pp.Data)
 		}
 	}
 }
