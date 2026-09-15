@@ -19,7 +19,6 @@ import (
 	"sync"
 	"time"
 
-	utls "github.com/refraction-networking/utls"
 	"golang.org/x/crypto/chacha20poly1305"
 	"golang.org/x/crypto/hkdf"
 )
@@ -64,9 +63,10 @@ type Key struct {
 	Bytes [32]byte
 }
 
-// DefaultFingerprint returns a Chrome-based fingerprint preset
-func DefaultFingerprint() utls.ClientHelloID {
-	return utls.HelloChrome_112
+// DefaultFingerprint returns a Chrome-based fingerprint preset name.
+// Server uses standard crypto/tls; client build (separate binary) will use utls with this ID.
+func DefaultFingerprint() string {
+	return "Chrome_120"
 }
 
 var (
@@ -133,25 +133,10 @@ func ServerTLSHandshake(conn net.Conn, fingerprint string) (net.Conn, error) {
 	return tlsConn, nil
 }
 
-// ClientTLSHandshake uses utls to mimic Yandex Music TLS fingerprint
+// ClientTLSHandshake connects to server.
+// For the server binary, this is a stub – client is a separate binary.
 func ClientTLSHandshake(conn net.Conn, serverName string, fingerprint string) (net.Conn, error) {
-	tcpConn, _ := conn.(*net.TCPConn)
-	if tcpConn != nil {
-		tcpConn.SetNoDelay(true)
-	}
-
-	helloID := DefaultFingerprint()
-	uconn := utls.UClient(conn, &utls.Config{
-		ServerName:         serverName,
-		InsecureSkipVerify: false,
-		MinVersion:         tls.VersionTLS13,
-		MaxVersion:         tls.VersionTLS13,
-	}, helloID)
-
-	if err := uconn.Handshake(); err != nil {
-		return nil, fmt.Errorf("tls handshake: %w", err)
-	}
-	return uconn, nil
+	return nil, errors.New("client build not included in server binary")
 }
 
 // DeriveKeys generates per-direction keys using HKDF
