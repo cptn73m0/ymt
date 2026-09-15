@@ -25,7 +25,10 @@ jobs:
       - name: Build Android APK
         run: |
           cd flutter
-          echo "flutter.sdk=$FLUTTER_ROOT" > android/local.properties
+          flutter create --platforms android .
+          echo "flutter.sdk=$FLUTTER_ROOT" > android/local.properties 2>/dev/null || true
+          # Inject custom VpnService code
+          mkdir -p android/app/src/main/kotlin/com/ymt/app
           flutter pub get
           flutter build apk --release
 
