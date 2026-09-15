@@ -1,0 +1,27 @@
+name: ymt_client
+description: Yandex Music Tunnel client
+publish_to: 'none'
+version: 1.0.0
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_secure_storage: ^9.0.0
+  qr_code_scanner: ^1.0.1
+  mobile_scanner: ^5.0.0
+  http: ^1.2.0
+  provider: ^6.1.0
+  permission_handler: ^11.0.0
+  window_manager: ^0.3.0
+  path_provider: ^2.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  assets:
+    - assets/

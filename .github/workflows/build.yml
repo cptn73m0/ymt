@@ -1,0 +1,77 @@
+name: Build YMT Client
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'flutter/**'
+      - 'cmd/client/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      
+      - name: Build Go client library (gomobile)
+        run: |
+          go install golang.org/x/mobile/cmd/gomobile@latest
+          gomobile init
+          cd cmd/client
+          gomobile bind -o ../../flutter/android/app/libs/ymt.aar -target=android -androidapi 24 github.com/cptn73m0/ymt/internal/client
+      
+      - name: Build Android APK
+        run: |
+          cd flutter
+          flutter pub get
+          flutter build apk --release
+      
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ymt-client-android
+          path: flutter/build/app/outputs/flutter-apk/app-release.apk
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      
+      - name: Build Go client binary
+        run: |
+          cd cmd/client
+          go build -o ../../flutter/windows/ymt-client.exe .
+      
+      - name: Build Windows MSI
+        run: |
+          cd flutter
+          flutter pub get
+          flutter build windows --release
+      
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: ymt-client-windows
+          path: flutter/build/windows/runner/Release/
