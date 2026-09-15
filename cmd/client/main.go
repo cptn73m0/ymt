@@ -220,11 +220,6 @@ func handleSOCKS5(client net.Conn, framer *http2.Framer) {
 	}()
 	wg.Wait()
 }
-			framer.WriteData(3, false, buf[:n])
-		}
-	}()
-	wg.Wait()
-}
 
 type h2StreamReader3 struct {
 	framer *http2.Framer
