@@ -404,6 +404,10 @@ func (s *Server) apiConfigLink(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "user not found", 404)
 		return
 	}
+	if user.RawKey == "" {
+		http.Error(w, "raw key not available - delete and recreate user", 400)
+		return
+	}
 	link, _ := encryptConfigLink(&ConfigPayload{
 		Server: s.cfg.Domain, Port: strings.Split(s.cfg.Listen, ":")[1],
 		ClientID: user.ClientID, Key: user.RawKey, Domain: s.cfg.Domain,

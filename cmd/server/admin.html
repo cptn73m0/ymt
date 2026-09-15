@@ -193,6 +193,7 @@ function deleteUser(id) { if (!confirm("Delete " + id + "?")) return; var x = ne
 function showConfig(id) {
   var x = new XMLHttpRequest(); x.open("GET", "/admin/api/config-link?client_id=" + encodeURIComponent(id), true);
   x.onload = function() {
+    if (x.status !== 200) { toast("Error: " + x.responseText); return; }
     var d = JSON.parse(x.responseText);
     document.getElementById("modal-body").innerHTML = '<div style="line-height:1.8"><b>Client ID:</b> ' + esc(id) + '<br><b>Config Link:</b><div class="link-box">' + esc(d.link) + '</div></div><div style="margin-top:12px"><button class="btn btn-sm btn-primary" onclick="copyText(\'' + esc(d.link).replace(/'/g,"\\'") + '\')">Copy</button> <button class="btn btn-sm btn-ghost" onclick="showQR(\'' + esc(d.link).replace(/'/g,"\\'") + '\')">QR</button></div>';
     document.getElementById("modal-overlay").classList.add("show");
