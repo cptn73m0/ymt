@@ -37,10 +37,10 @@ class TunnelConfig {
   };
 
   factory TunnelConfig.fromJson(Map<String, dynamic> json) => TunnelConfig(
-    server: json['server'] ?? '',
-    port: json['port'] ?? '',
-    clientId: json['client_id'] ?? '',
-    key: json['key'] ?? '',
-    domain: json['domain'] ?? '',
+    server: json['s'] ?? json['server'] ?? '',
+    port: json['p'] ?? json['port'] ?? '',
+    clientId: json['c'] ?? json['client_id'] ?? '',
+    key: json['k'] ?? json['key'] ?? '',
+    domain: json['d'] ?? json['domain'] ?? '',
   );
 }

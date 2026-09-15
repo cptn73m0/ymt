@@ -50,6 +50,7 @@ type User struct {
 	ID        string    `json:"id"`
 	ClientID  string    `json:"client_id"`
 	KeyHash   []byte    `json:"-"`
+	RawKey    string    `json:"-"`
 	Enabled   bool      `json:"enabled"`
 	MaxBytes  int64     `json:"max_bytes"`
 	CreatedAt time.Time `json:"created_at"`
@@ -66,7 +67,8 @@ func openDB(path string) *UserDB {
 	db.Exec("PRAGMA busy_timeout=5000")
 	db.Exec(`CREATE TABLE IF NOT EXISTS users (
 		id TEXT PRIMARY KEY, client_id TEXT UNIQUE NOT NULL,
-		key_hash BLOB NOT NULL, enabled INTEGER DEFAULT 1,
+		key_hash BLOB NOT NULL, raw_key TEXT NOT NULL DEFAULT '',
+		enabled INTEGER DEFAULT 1,
 		max_bytes INTEGER DEFAULT 0, created_at TEXT NOT NULL,
 		last_seen TEXT NOT NULL DEFAULT ''
 	)`)
@@ -88,13 +90,13 @@ func openDB(path string) *UserDB {
 
 func (u *UserDB) GetUser(clientID string) (*User, error) {
 	row := u.db.QueryRow(
-		`SELECT id, client_id, key_hash, enabled, max_bytes, created_at, last_seen FROM users WHERE client_id = ? AND enabled = 1`,
+		`SELECT id, client_id, key_hash, raw_key, enabled, max_bytes, created_at, last_seen FROM users WHERE client_id = ? AND enabled = 1`,
 		clientID,
 	)
 	user := &User{}
 	var createdAt string
 	var lastSeen string
-	if err := row.Scan(&user.ID, &user.ClientID, &user.KeyHash, &user.Enabled, &user.MaxBytes, &createdAt, &lastSeen); err != nil {
+	if err := row.Scan(&user.ID, &user.ClientID, &user.KeyHash, &user.RawKey, &user.Enabled, &user.MaxBytes, &createdAt, &lastSeen); err != nil {
 		return nil, err
 	}
 	user.CreatedAt, _ = time.Parse(time.RFC3339, createdAt)
@@ -113,7 +115,7 @@ func (u *UserDB) CreateUser(clientID, keyHex string) (*User, error) {
 	hash := sha256.Sum256(keyBytes)
 	id := randomHex(8)
 	now := time.Now().UTC().Format(time.RFC3339)
-	_, err = u.db.Exec(`INSERT INTO users (id, client_id, key_hash, created_at) VALUES (?, ?, ?, ?)`, id, clientID, hash[:], now)
+	_, err = u.db.Exec(`INSERT INTO users (id, client_id, key_hash, raw_key, created_at) VALUES (?, ?, ?, ?, ?)`, id, clientID, hash[:], keyHex, now)
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +129,7 @@ func (u *UserDB) UpdateUser(clientID, newKeyHex string, maxBytes int64) error {
 			return fmt.Errorf("invalid key: %w", err)
 		}
 		h := sha256.Sum256(keyBytes)
-		_, err = u.db.Exec(`UPDATE users SET key_hash=?, max_bytes=? WHERE client_id=?`, h[:], maxBytes, clientID)
+		_, err = u.db.Exec(`UPDATE users SET key_hash=?, raw_key=?, max_bytes=? WHERE client_id=?`, h[:], newKeyHex, maxBytes, clientID)
 		return err
 	}
 	_, err := u.db.Exec(`UPDATE users SET max_bytes=? WHERE client_id=?`, maxBytes, clientID)
@@ -404,7 +406,7 @@ func (s *Server) apiConfigLink(w http.ResponseWriter, r *http.Request) {
 	}
 	link, _ := encryptConfigLink(&ConfigPayload{
 		Server: s.cfg.Domain, Port: strings.Split(s.cfg.Listen, ":")[1],
-		ClientID: user.ClientID, Key: "KEY_REDACTED", Domain: s.cfg.Domain,
+		ClientID: user.ClientID, Key: user.RawKey, Domain: s.cfg.Domain,
 	}, getLinkKey(s.db))
 	json.NewEncoder(w).Encode(map[string]string{"link": link})
 }

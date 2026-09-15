@@ -186,7 +186,7 @@ func (s *Server) handleConn(raw net.Conn) {
 	}
 
 	user, err := s.db.GetUser(req.ClientID)
-	if err != nil || !protocol.VerifyKey(req.KeyProof, user.KeyHash) {
+	if err != nil || !protocol.VerifyKeyWithNonce(req.KeyProof, req.Nonce, user.RawKey) {
 		resp, _ := json.Marshal(protocol.AuthResponse{Status: "error", Reason: "auth fail"})
 		framer.WriteHeaders(http2.HeadersFrameParam{StreamID: 1, EndHeaders: true, EndStream: false})
 		framer.WriteData(1, true, resp)

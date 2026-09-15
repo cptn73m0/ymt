@@ -10,6 +10,7 @@ import (
 	"crypto/x509/pkix"
 	"encoding/base64"
 	"encoding/binary"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -211,16 +212,33 @@ func GenerateKeyProof(key []byte, nonce []byte) []byte {
 	return mac.Sum(nil)
 }
 
-// VerifyKey checks that the HMAC proof matches stored key hash
+// VerifyKey checks that the HMAC proof matches by recomputing HMAC with stored key.
 func VerifyKey(proof string, expectedHash []byte) bool {
 	proofBytes, err := base64.StdEncoding.DecodeString(proof)
 	if err != nil {
 		return false
 	}
-
-	// hash the proof and compare with stored hash
 	hash := sha256.Sum256(proofBytes)
 	return hmac.Equal(hash[:], expectedHash)
+}
+
+// VerifyKeyWithNonce takes proof string + base64 nonce + rawKey hex.
+// Decodes nonce, recomputes HMAC-SHA256(rawKey, nonce) and compares.
+func VerifyKeyWithNonce(proof string, nonceB64 string, rawKeyHex string) bool {
+	proofBytes, err := base64.StdEncoding.DecodeString(proof)
+	if err != nil {
+		return false
+	}
+	nonce, err := base64.StdEncoding.DecodeString(nonceB64)
+	if err != nil {
+		return false
+	}
+	keyBytes, err := hex.DecodeString(rawKeyHex)
+	if err != nil {
+		return false
+	}
+	expected := GenerateKeyProof(keyBytes, nonce)
+	return hmac.Equal(proofBytes, expected)
 }
 
 // VerifyDecrypt is a self-test: encrypt + decrypt a known value

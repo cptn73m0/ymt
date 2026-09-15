@@ -175,17 +175,4 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-
-  void _showAddDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Add Config'),
-        content: const Text('Scan QR or paste ymt:// link'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-        ],
-      ),
-    );
-  }
 }

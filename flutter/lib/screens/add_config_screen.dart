@@ -2,9 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/tunnel_service.dart';
 
-class AddConfigScreen extends StatelessWidget {
+class AddConfigScreen extends StatefulWidget {
+  @override
+  State<AddConfigScreen> createState() => _AddConfigScreenState();
+}
+
+class _AddConfigScreenState extends State<AddConfigScreen> {
   final _linkController = TextEditingController();
-  final _serverController = TextEditingController();
+  final _serverController = TextEditingController(text: '2.27.123.198:8080');
+  bool _loading = false;
+
+  @override
+  void dispose() {
+    _linkController.dispose();
+    _serverController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +29,6 @@ class AddConfigScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Manual entry
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -37,16 +49,41 @@ class AddConfigScreen extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () async {
+                        onPressed: _loading ? null : () async {
                           final link = _linkController.text.trim();
-                          if (link.isEmpty) return;
-                          final cfg = await tunnel.decryptLink(link, _serverController.text.trim());
-                          if (cfg != null && context.mounted) {
-                            Navigator.pop(context);
+                          if (link.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Paste config link first')),
+                            );
+                            return;
+                          }
+                          setState(() => _loading = true);
+                          try {
+                            final cfg = await tunnel.decryptLink(link, _serverController.text.trim());
+                            if (cfg != null && mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Connected as ${cfg.clientId}')),
+                              );
+                              Navigator.pop(context);
+                            } else if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Failed to decrypt link. Check server address.')),
+                              );
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Error: $e')),
+                              );
+                            }
+                          } finally {
+                            if (mounted) setState(() => _loading = false);
                           }
                         },
-                        icon: const Icon(Icons.check),
-                        label: const Text('Apply'),
+                        icon: _loading
+                            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            : const Icon(Icons.check),
+                        label: Text(_loading ? 'Decrypting...' : 'Apply'),
                       ),
                     ),
                   ],
@@ -78,7 +115,7 @@ class AddConfigScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
             Text(
-              'Server IP (for decryption)',
+              'Server (for decryption)',
               style: TextStyle(color: Colors.grey[400]),
             ),
             TextField(

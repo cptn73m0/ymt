@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"flag"
@@ -99,8 +100,8 @@ func runSession(tlsConn net.Conn, clientID string, key []byte, mode string, sock
 	proof := protocol.GenerateKeyProof(key, nonce)
 	authReq := protocol.AuthRequest{
 		ClientID: clientID,
-		KeyProof: base64Encode(proof),
-		Nonce:    base64Encode(nonce),
+		KeyProof: base64.StdEncoding.EncodeToString(proof),
+		Nonce:    base64.StdEncoding.EncodeToString(nonce),
 	}
 	authData, _ := json.Marshal(authReq)
 
@@ -214,6 +215,11 @@ func handleSOCKS5(client net.Conn, framer *http2.Framer) {
 			if err != nil {
 				return
 			}
+			framer.WriteData(3, false, buf[:n])
+		}
+	}()
+	wg.Wait()
+}
 			framer.WriteData(3, false, buf[:n])
 		}
 	}()
