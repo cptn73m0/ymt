@@ -65,6 +65,8 @@ func main() {
 	}
 	log.Printf("crypto OK")
 
+	initTemplates()
+
 	srv = &Server{
 		cfg:         cfg,
 		db:          openDB(filepath.Join(cfg.DataDir, "ymt.db")),
