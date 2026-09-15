@@ -10,7 +10,6 @@ import (
 	"io"
 	"log"
 	"net"
-	"strings"
 	"sync"
 	"time"
 
@@ -245,13 +244,4 @@ func (r *h2StreamReader3) Read(b []byte) (int, error) {
 			r.framer.WritePing(true, pp.Data)
 		}
 	}
-}
-
-func base64Encode(data []byte) string {
-	const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
-	var result strings.Builder
-	for _, b := range data {
-		result.WriteByte(chars[b%64])
-	}
-	return result.String()
 }
